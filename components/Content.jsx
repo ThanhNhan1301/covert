@@ -58,9 +58,13 @@ function Content() {
           list_string_numbers[number[2]]
         }`;
       } else {
-        return `${list_string_numbers[number[0]]} trăm ${
-          list_string_numbers[number[1]]
-        } mươi ${list_string_numbers[number[2]]}`;
+        if (number[1] === "1" && number[2] === "1") {
+          return `${list_string_numbers[number[0]]} trăm mười một`;
+        } else {
+          return `${list_string_numbers[number[0]]} trăm ${
+            list_string_numbers[number[1]]
+          } mươi ${list_string_numbers[number[2]]}`;
+        }
       }
     }
 
