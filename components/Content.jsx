@@ -23,52 +23,42 @@ function Content() {
   const [error, setError] = React.useState();
   const [result, setResult] = React.useState("");
 
-  let array = [];
-
-  const read_unique_tree = (str, index) => {
-    if (index == 2) {
-      if (str === "0") return "lẻ";
-      if (str === "1") return "mười";
-    } else if (index == 3) {
-      if (str === "0") return "mươi";
-      if (str === "1") return "mốt";
-    }
-    return list_string_numbers[str];
-  };
-
-  const read_unique_tow = (str) => {
-    if (str === "0") return "mươi";
-    if (str === "1") return "mười";
-    return list_string_numbers[str];
-  };
-
   const read_tree_number = (number) => {
-    let r = "";
-    if (number == "000") return r;
-    if (number == "100") return "một trăm";
-    switch (number.length) {
-      case 3:
-        r = [
-          list_string_numbers[number[0]],
-          "trăm",
-          read_unique_tree(number[1], 2),
-          read_unique_tree(number[2], 3),
-        ].join(" ");
-        break;
-      case 2:
-        r =
-          number === "10"
-            ? "mười"
-            : [
-                list_string_numbers[number[0]],
-                number[1] === "0" ? "" : "mươi",
-                read_unique_tow(number[1]),
-              ].join(" ");
-        break;
-      default:
-        r = list_string_numbers[number[0]];
-        break;
+    //number = '123'
+    if (number.length === 1) {
+      return list_string_numbers[number];
+    } else if (number.length === 2) {
+      if (number[0] === "1" && number[1] === "0") {
+        return `mười`;
+      } else {
+        if (number[0] === "1" && number[1] !== "0") {
+          return `mười ${list_string_numbers[number[1]]}`;
+        } else {
+          return `${list_string_numbers[number[0]]} mươi ${
+            list_string_numbers[number[1]]
+          }`;
+        }
+      }
+    } else if (number.length === 3) {
+      if (number[0] === "0" && number[1] === "0" && number[2] === "0") {
+        return "";
+      } else if (number[0] !== "0" && number[1] === "0" && number[2] === "0") {
+        return `${list_string_numbers[number[0]]}`;
+      } else if (number[0] !== "0" && number[1] !== "0" && number[2] === "0") {
+        return `${list_string_numbers[number[0]]} trăm ${
+          list_string_numbers[number[1]]
+        } mươi`;
+      } else if (number[0] !== "0" && number[1] === "0" && number[2] !== "0") {
+        return `${list_string_numbers[number[0]]} trăm lẻ ${
+          list_string_numbers[number[2]]
+        }`;
+      } else {
+        return `${list_string_numbers[number[0]]} trăm ${
+          list_string_numbers[number[1]]
+        } mươi ${list_string_numbers[number[2]]}`;
+      }
     }
+
     return r;
   };
 
@@ -95,8 +85,11 @@ function Content() {
     });
 
     result.push("đồng");
+
     setResult(result.join(" "));
   };
+
+  const array = [];
 
   const handleSlice = (str) => {
     let current = str;
@@ -108,6 +101,8 @@ function Content() {
     }
     current = current.slice(0, -3);
     array.unshift({ value: t });
+
+    console.log(array);
     if (current) {
       handleSlice(current);
     } else {
@@ -121,16 +116,24 @@ function Content() {
 
     if (!input) return setError(error_message_when_null);
     if (isNaN(Number(input))) return setError(error_message_invalid);
-    array = [];
 
     //Action
-    setResult("");
-    let test = input;
-    if (test[0] === "0") {
-      test.slice(0, 1);
+
+    if (input[0] === "0") {
+      return setError("Số bạn nhập không được có số 0 ở vị trí đầu.");
     }
-    handleSlice(test);
-    setInput("");
+    setResult("");
+    handleSlice(input);
+  };
+
+  const showResult = (str) => {
+    const [x, ...y] = str;
+    return (
+      <>
+        <span className="uppercase">{x}</span>
+        <span>{y}</span>
+      </>
+    );
   };
 
   return (
@@ -160,7 +163,7 @@ function Content() {
         </button>
         <div className="mt-4 text-red-700">{error}</div>
         <div className="mt-8 border-t-[1px] border-gray-500 pt-4 border-dashed">
-          <span className="text-blue-700">{result}</span>
+          <span className="text-blue-700">{showResult(result)}</span>
         </div>
       </form>
     </div>
