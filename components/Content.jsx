@@ -21,7 +21,7 @@ const list_units_tree_number = ["", "ngàn", "triệu", "tỉ"];
 function Content() {
   const [input, setInput] = React.useState("");
   const [error, setError] = React.useState();
-  const [result, setResult] = React.useState("");
+  const [result, setResult] = React.useState("--");
 
   const read_tree_number = (number) => {
     //number = '123'
@@ -33,6 +33,9 @@ function Content() {
       } else {
         if (number[0] === "1" && number[1] !== "0") {
           return `mười ${list_string_numbers[number[1]]}`;
+        }
+        if (number[0] !== "1" && number[1] === "1") {
+          return `${list_string_numbers[number[0]]} mươi mốt`;
         } else {
           return `${list_string_numbers[number[0]]} mươi ${
             list_string_numbers[number[1]]
@@ -115,15 +118,20 @@ function Content() {
     e.preventDefault();
 
     if (!input) return setError(error_message_when_null);
-    if (isNaN(Number(input))) return setError(error_message_invalid);
+
+    let t = input;
+    t = t.replaceAll(",", "");
+
+    if (isNaN(Number(t))) return setError(error_message_invalid);
 
     //Action
 
-    if (input[0] === "0") {
+    if (t[0] === "0") {
       return setError("Số bạn nhập không được có số 0 ở vị trí đầu.");
     }
-    setResult("");
-    handleSlice(input);
+
+    setResult("--");
+    handleSlice(t);
   };
 
   const showResult = (str) => {
@@ -134,6 +142,11 @@ function Content() {
         <span>{y}</span>
       </>
     );
+  };
+
+  const handleOnChange = (e) => {
+    if (error) setError(null);
+    setInput(e.target.value);
   };
 
   return (
@@ -148,10 +161,7 @@ function Content() {
         <input
           maxLength={12}
           value={input}
-          onChange={(e) => {
-            if (error) setError(null);
-            setInput(e.target.value);
-          }}
+          onChange={handleOnChange}
           placeholder="Nhập số tiền"
           className="w-full outline-none h-[40px] border-[2px] border-slate-600 px-2 rounded-md"
         />
