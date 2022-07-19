@@ -70,11 +70,18 @@ function Content() {
   const handleCovert = (array) => {
     const x = list_units_tree_number;
     const result = [];
-    if (x.length - array.length > 0) {
-      for (let index = 0; index < x.length - array.length; index++) {
+
+    const s = x.length - array.length;
+    console.log(s);
+
+    if (s > 0) {
+      for (let index = 0; index < s; index++) {
+        console.log("test");
         x.pop();
       }
     }
+
+    console.log(x);
 
     const array_covert = array.map(({ value }, index) => {
       const u = x[x.length - 1 - index];
@@ -114,6 +121,8 @@ function Content() {
       handleCovert(array);
     }
   };
+
+  console.log(array);
 
   const handleSubmit = (e) => {
     //Checked
