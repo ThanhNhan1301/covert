@@ -72,16 +72,12 @@ function Content() {
     const result = [];
 
     const s = x.length - array.length;
-    console.log(s);
 
     if (s > 0) {
       for (let index = 0; index < s; index++) {
-        console.log("test");
         x.pop();
       }
     }
-
-    console.log(x);
 
     const array_covert = array.map(({ value }, index) => {
       const u = x[x.length - 1 - index];
@@ -92,7 +88,6 @@ function Content() {
         unit_tree: value === "000" ? "" : u,
       };
     });
-    setResult("");
 
     array_covert.map((value) => {
       result.push(value.str, value.unit_tree);
@@ -118,11 +113,10 @@ function Content() {
     if (current) {
       handleSlice(current);
     } else {
+      console.log(array);
       handleCovert(array);
     }
   };
-
-  console.log(array);
 
   const handleSubmit = (e) => {
     //Checked
@@ -130,7 +124,7 @@ function Content() {
 
     if (!input) return setError(error_message_when_null);
 
-    const t = input.replaceAll(",", "");
+    const t = input.replaceAll(",", "").trim();
 
     if (isNaN(Number(t))) return setError(error_message_invalid);
     setInput("");
@@ -165,7 +159,7 @@ function Content() {
         className="w-full max-w-[400px] bg-slate-50 p-5 shadow-md"
         onSubmit={handleSubmit}
       >
-        <span className="w-full text-end block">v.3.0</span>
+        <span className="w-full text-end block">v.3.1</span>
         <h3 className="text-center font-bold text-xl text-red-300 mb-8">
           Welcome, you !!!
         </h3>
