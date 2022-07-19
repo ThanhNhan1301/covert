@@ -22,6 +22,7 @@ function Content() {
   const [input, setInput] = React.useState("");
   const [error, setError] = React.useState();
   const [result, setResult] = React.useState("--");
+  const refInput = React.useRef("");
 
   const read_tree_number = (number) => {
     //number = '123'
@@ -33,9 +34,10 @@ function Content() {
       } else {
         if (number[0] === "1" && number[1] !== "0") {
           return `mười ${list_string_numbers[number[1]]}`;
-        }
-        if (number[0] !== "1" && number[1] === "1") {
+        } else if (number[0] !== "1" && number[1] === "1") {
           return `${list_string_numbers[number[0]]} mươi mốt`;
+        } else if (number[0] !== "1" && number[1] === "0") {
+          return `${list_string_numbers[number[0]]} mươi`;
         } else {
           return `${list_string_numbers[number[0]]} mươi ${
             list_string_numbers[number[1]]
@@ -67,7 +69,7 @@ function Content() {
 
   const handleCovert = (array) => {
     const x = list_units_tree_number;
-    let result = [];
+    const result = [];
     if (x.length - array.length > 0) {
       for (let index = 0; index < x.length - array.length; index++) {
         x.pop();
@@ -83,6 +85,8 @@ function Content() {
         unit_tree: value === "000" ? "" : u,
       };
     });
+    setResult("");
+
     array_covert.map((value) => {
       result.push(value.str, value.unit_tree);
     });
@@ -93,7 +97,6 @@ function Content() {
   };
 
   const array = [];
-
   const handleSlice = (str) => {
     let current = str;
     let t;
@@ -105,7 +108,6 @@ function Content() {
     current = current.slice(0, -3);
     array.unshift({ value: t });
 
-    console.log(array);
     if (current) {
       handleSlice(current);
     } else {
@@ -119,18 +121,16 @@ function Content() {
 
     if (!input) return setError(error_message_when_null);
 
-    let t = input;
-    t = t.replaceAll(",", "");
+    const t = input.replaceAll(",", "");
 
     if (isNaN(Number(t))) return setError(error_message_invalid);
+    setInput("");
 
     //Action
 
     if (t[0] === "0") {
       return setError("Số bạn nhập không được có số 0 ở vị trí đầu.");
     }
-
-    setResult("--");
     handleSlice(t);
   };
 
@@ -146,6 +146,7 @@ function Content() {
 
   const handleOnChange = (e) => {
     if (error) setError(null);
+    refInput.current = e.target.value;
     setInput(e.target.value);
   };
 
@@ -159,7 +160,7 @@ function Content() {
           Welcome, you !!!
         </h3>
         <input
-          maxLength={12}
+          maxLength={16}
           value={input}
           onChange={handleOnChange}
           placeholder="Nhập số tiền"
@@ -173,6 +174,13 @@ function Content() {
         </button>
         <div className="mt-4 text-red-700">{error}</div>
         <div className="mt-8 border-t-[1px] border-gray-500 pt-4 border-dashed">
+          <p className="mb-4">
+            Số tiền nhập:{" "}
+            <span className="text-blue-500 font-semibold">
+              {refInput.current}
+            </span>{" "}
+            VNĐ
+          </p>
           <span className="text-blue-700">{showResult(result)}</span>
         </div>
       </form>
