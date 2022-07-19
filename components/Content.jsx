@@ -31,7 +31,7 @@ function Content() {
       <textarea
         id="copy"
         contentEditable={false}
-        className={`outline-none border-none w-full bg-transparent max-h-[150px] ${
+        className={`outline-none border-none w-full bg-transparent min-h-[120px] ${
           uppercase && "uppercase"
         } first-letter:uppercase`}
         value={result}
