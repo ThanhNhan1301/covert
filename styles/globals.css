@@ -8,4 +8,17 @@
     padding: 0;
     box-sizing: border-box;
   }
+
+  .animate_checked {
+    animation: animate_checked 0.3 ease-in-out;
+  }
+
+  @keyframes animate_checked {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 }

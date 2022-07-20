@@ -1,4 +1,6 @@
 import React from "react";
+import { FaCopy, FaCheck } from "react-icons/fa";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const error_message_invalid = "Giá trị bạn nhập không phải chữ số";
 const error_message_when_null = "Bạn chưa nhập giá trị";
@@ -24,26 +26,51 @@ function Content() {
   const [result, setResult] = React.useState();
   const [unit, setUnit] = React.useState("đồng");
   const [uppercase, setUppercase] = React.useState(false);
+  const [textCopy, setTextCopy] = React.useState("");
+  const [valueInput, setValueInput] = React.useState("");
+  const [isCoping, setIsCoping] = React.useState(false);
+
+  React.useEffect(() => {
+    const eCopy = document.getElementById("copy");
+    if (!eCopy) return;
+    setTextCopy(eCopy.innerText);
+  }, [result, uppercase]);
+
+  React.useEffect(() => {
+    let unsubscribe;
+    if (isCoping) {
+      unsubscribe = setTimeout(() => {
+        setIsCoping(false);
+      }, [2000]);
+    }
+
+    return () => clearTimeout(unsubscribe);
+  }, [isCoping]);
 
   const showResult = (str) => {
-    const [x, ...y] = str || "";
+    if (!str) return <></>;
     return (
-      <textarea
-        id="copy"
-        contentEditable={false}
-        className={`outline-none border-none w-full bg-transparent min-h-[120px] ${
+      <div
+        className={`w-full flex justify-between items-center bg-transparent ${
           uppercase && "uppercase"
-        } first-letter:uppercase`}
-        value={result}
-      />
+        } gap-3`}
+      >
+        <p id="copy" className="flex-1 first-letter:uppercase text-purple-800">
+          {`${result} ${unit}`}
+        </p>
+        {textCopy && isCoping ? (
+          <FaCheck size={18} className="text-blue-500" />
+        ) : (
+          <CopyToClipboard text={textCopy} onCopy={handleOnCopy}>
+            <FaCopy size={18} className="cursor-pointer text-purple-800" />
+          </CopyToClipboard>
+        )}
+      </div>
     );
   };
 
-  const handleCopy = () => {
-    const ele_copy = document.getElementById("copy");
-    if (!ele_copy) return;
-    ele_copy.select();
-    document.execCommand("copy");
+  const handleOnCopy = () => {
+    setIsCoping(true);
   };
 
   const read_tree_number = (char) => {
@@ -100,9 +127,42 @@ function Content() {
     setResult(char_covert);
   };
 
+  const handleSplit = (text) => {
+    if (!text) return;
+    const char = text
+      .trim()
+      .replace("0", "")
+      .replaceAll(",", "")
+      .replaceAll(".", "");
+    const group_count = Math.ceil(char.length / 3);
+    const first_count = char.length % 3 === 0 ? 3 : char.length % 3;
+    let flag = first_count;
+
+    const array = Array(group_count)
+      .fill(0)
+      .map((_, index) => {
+        let value;
+        if (index === 0) {
+          value = char.slice(0, first_count);
+        } else {
+          value = char.slice(flag, flag + 3);
+          flag = flag + 3;
+        }
+
+        return value;
+      });
+
+    return array;
+  };
+
   const handleSubmit = (e) => {
+    setResult("");
     e.preventDefault();
-    let char = input[0] === "0" ? input.trim().replace("0", "") : input.trim();
+    let char = input
+      .trim()
+      .replace("0", "")
+      .replaceAll(",", "")
+      .replaceAll(".", "");
     if (!char) return setError(error_message_when_null);
     if (isNaN(+char)) return setError(error_message_invalid);
     handleCovert(char);
@@ -110,7 +170,9 @@ function Content() {
 
   const handleOnChange = (e) => {
     if (error) setError(null);
-    setInput(e.target.value);
+    const value = e.target.value;
+    setInput(value);
+    setValueInput(handleSplit(value));
   };
 
   return (
@@ -119,18 +181,20 @@ function Content() {
       flex justify-center items-center"
     >
       <form
-        className="w-[90%] max-w-[400px] bg-slate-50 p-5 shadow-md"
+        className="w-[90%] max-w-[400px] bg-slate-50 p-5 shadow-md pb-8"
         onSubmit={handleSubmit}
       >
-        <span className="w-full text-end block">v.3.1</span>
+        <span className="w-full text-end block underline text-red-500">
+          v.3.1
+        </span>
         <h3 className="text-center font-bold text-xl text-red-300 mb-8">
           Welcome, you !!!
         </h3>
         <input
           maxLength={16}
-          value={input}
+          value={valueInput}
           onChange={handleOnChange}
-          placeholder="Nhập số tiền"
+          placeholder="Nhập chữ số bạn muốn chuyển"
           className="w-full outline-none h-[40px] 
             border-[2px] border-slate-600 px-2 rounded-md mb-5"
         />
@@ -139,7 +203,7 @@ function Content() {
           maxLength={16}
           value={unit}
           onChange={(e) => setUnit(e.target.value)}
-          placeholder="Nhập số tiền"
+          placeholder="Nhập đơn vị (nếu có)"
           className="w-full outline-none h-[40px] 
             border-[2px] border-slate-600 px-2 rounded-md mb-5"
         />
@@ -154,7 +218,9 @@ function Content() {
         <div className="mt-8 border-t-[1px] border-gray-500 pt-4 border-dashed ">
           <div
             className="flex justify-center items-center mb-5 w-[100px] m-auto gap-2 cursor-pointer"
-            onClick={() => setUppercase(!uppercase)}
+            onClick={() => {
+              setUppercase(!uppercase);
+            }}
           >
             <div className={uppercase ? "" : "text-blue-600 font-semibold"}>
               Aa
@@ -170,14 +236,17 @@ function Content() {
               AA
             </div>
           </div>
-          <span className="text-blue-700 block">{showResult(result)}</span>
+          <div
+            className="w-full flex px-2 items-center min-h-[40px] 
+            border-[1px] border-purple-800 border-dashed rounded-md"
+          >
+            {result ? (
+              showResult(result)
+            ) : (
+              <span className="text-purple-400">Kết quả</span>
+            )}
+          </div>
         </div>
-        <button
-          className="block m-auto h-9 px-10 rounded-sm shadow-md text-white uppercase bg-blue-900"
-          onClick={handleCopy}
-        >
-          Copy
-        </button>
       </form>
     </div>
   );
