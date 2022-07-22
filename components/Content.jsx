@@ -129,11 +129,11 @@ function Content() {
 
   const handleSplit = (text) => {
     if (!text) return;
-    const char = text
-      .trim()
-      .replace("0", "")
-      .replaceAll(",", "")
-      .replaceAll(".", "");
+    let char =
+      text[0] === "0"
+        ? text.trim().replace("0", "")
+        : text.trim().trim().replaceAll(",", "").replaceAll(".", "");
+    char = text.trim().replaceAll(",", "").replaceAll(".", "");
     const group_count = Math.ceil(char.length / 3);
     const first_count = char.length % 3 === 0 ? 3 : char.length % 3;
     let flag = first_count;
@@ -158,11 +158,10 @@ function Content() {
   const handleSubmit = (e) => {
     setResult("");
     e.preventDefault();
-    let char = input
-      .trim()
-      .replace("0", "")
-      .replaceAll(",", "")
-      .replaceAll(".", "");
+    let char =
+      input[0] === "0"
+        ? input.trim().replace("0", "")
+        : input.trim().trim().replaceAll(",", "").replaceAll(".", "");
     if (!char) return setError(error_message_when_null);
     if (isNaN(+char)) return setError(error_message_invalid);
     handleCovert(char);
