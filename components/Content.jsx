@@ -86,6 +86,8 @@ function Content() {
       default:
         if (char === "100") return "một trăm";
         if (char === "110") return "một trăm mười";
+        if (char[1] === "0" && char[2] === "0")
+          return `${list_string_numbers[char[0]]} trăm`;
         if (char[1] === "0")
           return `${list_string_numbers[char[0]]} trăm lẻ ${
             list_string_numbers[char[2]]
@@ -184,7 +186,7 @@ function Content() {
         onSubmit={handleSubmit}
       >
         <span className="w-full text-end block underline text-red-500">
-          v.3.1
+          v.3.2
         </span>
         <h3 className="text-center font-bold text-xl text-red-300 mb-8">
           Welcome, you !!!
